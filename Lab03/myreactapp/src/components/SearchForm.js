@@ -2,6 +2,10 @@ import React from 'react';
 import { useForm } from 'react-hook-form';
 import { yupResolver } from '@hookform/resolvers/yup';
 import * as yup from 'yup';
+import FieldGroup from './FieldGroup';
+import TextInput from './TextInput';
+import SelectInput from './SelectInput';
+import DateInput from './DateInput';
 
 const today = new Date().toISOString().split('T')[0];
 
@@ -15,10 +19,13 @@ const schema = yup.object().shape({
         .test('is-future-date', 'Дата вильоту не може бути в минулому', (value) => !value || new Date(value) >= new Date(today)),
     returnDate: yup
         .string()
-        .test('is-valid-date', 'Дата має бути коректною', (value) => !isNaN(Date.parse(value)))
-        .when('date', (date, schema) =>
-            date ? schema.min(date, 'Дата повернення не може бути раніше дати вильоту') : schema
-        ),
+        .nullable() // дозволяє залишати поле пустим
+        .test('is-valid-date', 'Дата має бути коректною', (value) => !value || !isNaN(Date.parse(value)))
+        .test('is-after-departure', 'Дата повернення не може бути раніше дати вильоту', (value, context) => {
+            const departureDate = new Date(context.parent.date);
+            const returnDate = new Date(value);
+            return !value || returnDate >= departureDate;
+        }),
     class: yup.string().required("Вибір класу рейсу є обов'язковим"),
     passengers: yup
         .number()
@@ -27,6 +34,7 @@ const schema = yup.object().shape({
         .max(10, "Максимальна кількість пасажирів - 10"),
     baggage: yup.string().required("Вибір типу багажу є обов'язковим"),
 });
+
 
 const SearchForm = () => {
     const {
@@ -41,87 +49,55 @@ const SearchForm = () => {
         console.log(data);
     };
 
+    const glassOptions = [
+        { value: "economy", label: "Економ-клас" },
+        { value: "business", label: "Бізнес-клас" },
+        { value: "first", label: "Перший клас" },
+    ];
+
+    const baggageOptions = [
+        { value: "hand", label: "Ручна поклажа" },
+        { value: "checked", label: "Зареєстрований багаж" },
+    ];
+
     return (
         <form onSubmit={handleSubmit(onSubmit)} className="search-form">
-            <div className="form-group">
-                <label htmlFor="from">Звідки</label>
-                <input
-                    id="from"
-                    type="text"
-                    {...register('from')}
-                    className={errors.from ? 'input-error' : ''}
-                />
-                {errors.from && <p className="error-message">{errors.from.message}</p>}
-            </div>
+            <FieldGroup id="from" label="Звідки" error={errors.from?.message}>
+                <TextInput id="from" register={register('from')} placeholder="Enter city" error={errors.from} />
+            </FieldGroup>
 
-            <div className="form-group">
-                <label htmlFor="to">Куди</label>
-                <input
-                    id="to"
-                    type="text"
-                    {...register('to')}
-                    className={errors.to ? 'input-error' : ''}
-                />
-                {errors.to && <p className="error-message">{errors.to.message}</p>}
-            </div>
+            <FieldGroup id="to" label="Куди" error={errors.to?.message}>
+                <TextInput id="to" register={register('to')} placeholder="Enter city" error={errors.to} />
+            </FieldGroup>
 
-            <div className="form-group">
-                <label htmlFor="date">Дата відправлення</label>
-                <input
-                    id="date"
-                    type="date"
-                    {...register('date')}
-                    className={errors.date ? 'input-error' : ''}
-                    min={today}
-                />
-                {errors.date && <p className="error-message">{errors.date.message}</p>}
-            </div>
+            <FieldGroup id="date" label="Дата відправлення" error={errors.date?.message}>
+                <DateInput id="date" register={register('date')} error={errors.date} min={today} />
+            </FieldGroup>
 
-            <div className="form-group">
-                <label htmlFor="returnDate">Дата повернення</label>
-                <input
-                    id="returnDate"
-                    type="date"
-                    {...register('returnDate')}
-                    className={errors.returnDate ? 'input-error' : ''}
-                />
-                {errors.returnDate && (
-                    <p className="error-message">{errors.returnDate.message}</p>
-                )}
-            </div>
+            <FieldGroup id="returnDate" label="Дата повернення" error={errors.returnDate?.message}>
+                <DateInput id="returnDate" register={register('returnDate')} error={errors.returnDate} />
+            </FieldGroup>
 
-            <div className="form-group">
-                <label htmlFor="class">Клас рейсу</label>
-                <select id="class" {...register('class')} className={errors.class ? 'input-error' : ''} defaultValue="economy">
-                    <option value="economy">Економ-клас</option>
-                    <option value="business">Бізнес-клас</option>
-                    <option value="first">Перший клас</option>
-                </select>
-                {errors.class && <p className="error-message">{errors.class.message}</p>}
-            </div>
+            <FieldGroup id="class" label="Клас рейсу" error={errors.class?.message}>
+                <SelectInput id="class" register={register('class')} options={glassOptions} error={errors.class} />
+            </FieldGroup>
 
-            <div className="form-group">
-                <label htmlFor="passengers">Кількість пасажирів</label>
-                <input
+            <FieldGroup id="passengers" label="Кількість пасажирів" error={errors.passengers?.message}>
+                <TextInput
                     id="passengers"
+                    register={register('passengers')}
                     type="number"
-                    {...register('passengers')}
-                    className={errors.passengers ? 'input-error' : ''}
+                    error={errors.passengers}
                     min="1"
                     max="10"
                     defaultValue="1"
                 />
-                {errors.passengers && <p className="error-message">{errors.passengers.message}</p>}
-            </div>
+            </FieldGroup>
 
-            <div className="form-group">
-                <label htmlFor="baggage">Тип багажу</label>
-                <select id="baggage" {...register('baggage')} className={errors.baggage ? 'input-error' : ''} defaultValue="hand">
-                    <option value="hand">Ручна поклажа</option>
-                    <option value="checked">Зареєстрований багаж</option>
-                </select>
-                {errors.baggage && <p className="error-message">{errors.baggage.message}</p>}
-            </div>
+
+            <FieldGroup id="baggage" label="Тип багажу" error={errors.baggage?.message}>
+                <SelectInput id="baggage" register={register('baggage')} options={baggageOptions} error={errors.baggage} />
+            </FieldGroup>
 
             <button type="submit">Пошук</button>
         </form>
