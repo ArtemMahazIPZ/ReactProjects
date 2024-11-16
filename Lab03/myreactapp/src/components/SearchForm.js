@@ -19,7 +19,7 @@ const schema = yup.object().shape({
         .test('is-future-date', 'Дата вильоту не може бути в минулому', (value) => !value || new Date(value) >= new Date(today)),
     returnDate: yup
         .string()
-        .nullable() // дозволяє залишати поле пустим
+        .nullable() 
         .test('is-valid-date', 'Дата має бути коректною', (value) => !value || !isNaN(Date.parse(value)))
         .test('is-after-departure', 'Дата повернення не може бути раніше дати вильоту', (value, context) => {
             const departureDate = new Date(context.parent.date);
