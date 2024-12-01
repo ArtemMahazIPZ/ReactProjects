@@ -1,0 +1,114 @@
+body {
+  margin: 0;
+  font-family: 'Montserrat', sans-serif;
+  background: linear-gradient(135deg, #6157ff, #ee49fd);
+  color: #333;
+  min-height: 100vh;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+}
+
+h1 {
+  text-align: center;
+  margin: 20px 0;
+  color: #ffffff;
+  font-weight: 700;
+  font-size: 2.5rem;
+}
+
+button {
+  display: block;
+  margin: 20px auto;
+  padding: 10px 20px;
+  background-color: #6c5ce7;
+  color: white;
+  border: none;
+  border-radius: 8px;
+  font-size: 16px;
+  font-family: 'Montserrat', sans-serif;
+  cursor: pointer;
+  transition: background-color 0.3s, transform 0.2s;
+}
+
+button:hover {
+  background-color: #5a4ecf;
+  transform: scale(1.05);
+}
+
+ul {
+  list-style-type: none;
+  padding: 0;
+  max-width: 400px;
+  margin: 20px auto;
+}
+
+li {
+  background: #ffffff;
+  margin: 10px 0;
+  padding: 15px;
+  border-radius: 10px;
+  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 20px;
+  transition: box-shadow 0.2s;
+}
+
+li:hover {
+  box-shadow: 0 6px 10px rgba(0, 0, 0, 0.15);
+}
+
+li.completed .todo-title {
+  text-decoration: line-through;
+  text-decoration-thickness: 2px;
+  text-decoration-color: #d63031;
+  color: #b2bec3;
+}
+
+.todo-title {
+  flex: 1;
+  font-size: 1rem;
+  font-weight: 500;
+  margin-right: 10px;
+  color: #2d3436;
+}
+
+.todo-actions {
+  display: flex;
+  gap: 15px;
+}
+
+button.todo-btn {
+  padding: 8px 14px;
+  font-size: 14px;
+  border-radius: 8px;
+  border: none;
+  cursor: pointer;
+  font-family: 'Montserrat', sans-serif;
+  transition: background-color 0.3s, transform 0.2s;
+}
+
+button.todo-btn:hover {
+  transform: scale(1.1);
+}
+
+button.todo-btn.delete {
+  background-color: #e17055;
+  color: white;
+}
+
+button.todo-btn.delete:hover {
+  background-color: #d63031;
+}
+
+button.todo-btn.toggle {
+  background-color: #00cec9;
+  color: white;
+}
+
+button.todo-btn.toggle:hover {
+  background-color: #00b894;
+}
